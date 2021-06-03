@@ -1,4 +1,4 @@
-package net.labymodwrapper.src.utils;
+package net.labymodwrapper.src.utils.enums;
 
 /**
  * @author SocketConnection

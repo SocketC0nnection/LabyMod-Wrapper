@@ -2,16 +2,13 @@ package net.labymodwrapper.src;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import net.labymodwrapper.src.utils.Cosmetic;
-import net.labymodwrapper.src.utils.Emote;
-import net.labymodwrapper.src.utils.Group;
-import net.labymodwrapper.src.utils.Sticker;
+import net.labymodwrapper.src.utils.Requests;
+import net.labymodwrapper.src.utils.enums.Cosmetic;
+import net.labymodwrapper.src.utils.enums.Emote;
+import net.labymodwrapper.src.utils.enums.Group;
+import net.labymodwrapper.src.utils.enums.Sticker;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.UUID;
@@ -31,25 +28,7 @@ public class LabyProfile {
     }
 
     public LabyProfile update(Proxy proxy) throws IOException {
-        HttpURLConnection connection;
-        URL url = new URL(String.format("https://dl.labymod.net/userdata/%s.json", uuid));
-
-        if(proxy == null) {
-            connection = (HttpURLConnection) url.openConnection();
-        } else {
-            connection = (HttpURLConnection) url.openConnection(proxy);
-        }
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-        StringBuilder builder = new StringBuilder();
-
-        String msg;
-        while ((msg = reader.readLine()) != null) {
-            builder.append(msg).append("\n");
-        }
-
-        object = new JsonParser().parse(builder.toString()).getAsJsonObject();
+        object = Requests.get(new URL(String.format("https://dl.labymod.net/userdata/%s.json", uuid))).getAsJsonObject();
 
         return this;
     }
@@ -64,7 +43,7 @@ public class LabyProfile {
         Sticker[] stickers = new Sticker[array.size()];
 
         for(int i = 0; i < stickers.length; i++) {
-            stickers[i] = Sticker.getStickerById(Integer.parseInt(array.get(i).toString()));
+            stickers[i] = Sticker.getStickerById(array.get(i).getAsInt());
         }
 
         return stickers;
@@ -78,7 +57,7 @@ public class LabyProfile {
         for(int i = 0; i < groups.length; i++) {
             JsonObject object = array.get(i).getAsJsonObject();
 
-            groups[i] = Group.getGroupById(Integer.parseInt(object.get("i").toString()));
+            groups[i] = Group.getGroupById(object.get("i").getAsInt());
         }
 
         return groups;
@@ -90,7 +69,7 @@ public class LabyProfile {
         Emote[] emotes = new Emote[array.size()];
 
         for(int i = 0; i < emotes.length; i++) {
-            emotes[i] = Emote.getEmoteById(Integer.parseInt(array.get(i).toString()));
+            emotes[i] = Emote.getEmoteById(array.get(i).getAsInt());
         }
 
         return emotes;
@@ -104,7 +83,7 @@ public class LabyProfile {
         for(int i = 0; i < cosmetics.length; i++) {
             JsonObject object = array.get(i).getAsJsonObject();
 
-            cosmetics[i] = Cosmetic.getCosmeticById(Integer.parseInt(object.get("i").toString()));
+            cosmetics[i] = Cosmetic.getCosmeticById(object.get("i").getAsInt());
         }
 
         return cosmetics;
@@ -156,6 +135,14 @@ public class LabyProfile {
         }
 
         return false;
+    }
+
+    public String getCloakTexture() {
+        return "https://dl.labymod.net/capes/" + uuid;
+    }
+
+    public String getBandanaTexture() {
+        return "https://dl.labymod.net/textures/bandanas/" + uuid;
     }
 
     public JsonObject getObject() {
