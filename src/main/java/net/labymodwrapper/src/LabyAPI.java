@@ -101,7 +101,7 @@ public class LabyAPI {
 
         PrintWriter writer = new PrintWriter(connection.getOutputStream());
 
-        writer.println(String.format("reporter=%s&capeowner=%s", reportersName, capeOwnersName));
+        writer.write(String.format("reporter=%s&capeowner=%s", reportersName, capeOwnersName));
         writer.flush();
 
         return new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine();
